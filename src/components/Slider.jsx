@@ -115,7 +115,7 @@ const Slider = () => {
                 {sliderItems.map((items) => (
                     <Slide bg={items.bg} slideIndex={slideIndex}>
                         <ImageContainer>
-                            <Image src={items.img}></Image>
+                            <Image src={process.env.PUBLIC_URL + items.img}></Image>
                         </ImageContainer>
                         <InfoContainer>
                             <Title>{items.title}</Title>

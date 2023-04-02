@@ -1,11 +1,9 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
 import styled from 'styled-components'
 import ArrowLeftOutlinedIcon from '@mui/icons-material/ArrowLeftOutlined';
 import ArrowRightOutlinedIcon from '@mui/icons-material/ArrowRightOutlined';
 import { sliderItems } from "../data"
 import { useState } from 'react';
-import Shop from './Shop';
 
 const Container = styled.div`
     width : 100%;
@@ -94,17 +92,6 @@ const Slider = () => {
         }
     };
 
-    const showInfo = (val) => {
-        const [clickedVal] = sliderItems.filter(items => items.id == val);
-        alert('Clicked info ' + clickedVal.title);
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(
-            <React.StrictMode>
-                <Shop />
-            </React.StrictMode>
-        );
-    };
-
     return (
         <Container>
             <Arrow direction="left" onClick={() => handleClick("left")}>
@@ -112,14 +99,14 @@ const Slider = () => {
             </Arrow>
             <Wrapper >
                 {sliderItems.map((items) => (
-                    <Slide bgColour={items.bg} slideIndex={slideIndex}>
+                    <Slide bgColour={items.bg} slideIndex={slideIndex} key={items.id}>
                         <ImageContainer>
                             <Image src={process.env.PUBLIC_URL + items.img}></Image>
                         </ImageContainer>
                         <InfoContainer>
                             <Title>{items.title}</Title>
                             <Desc>{items.desc}</Desc>
-                            <Button onClick={() => showInfo(`${items.id}`)}>SHOP NOW</Button>
+                            <Button>SHOP NOW</Button>
                         </InfoContainer>
                     </Slide>
                 ))}

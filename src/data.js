@@ -28,3 +28,64 @@ export const sliderItems = [
         bg: "oldlace"
     }
 ]
+
+export const categories = [
+    {
+        id: 1,
+        img: "images/categories/pc.jpg",
+        title: "LINGRIE",
+    },
+    {
+        id: 2,
+        img: "images/categories/pc2.jpg",
+        title: "SHIRTS",
+    },
+    {
+        id: 3,
+        img: "images/categories/pc3.jpg",
+        title: "JACKETS",
+    },
+]
+
+export const favProducts = [
+    {
+        id: 1,
+        img: "images/categories/p1.jpg",
+        title: "SUMMER SALE",
+    },
+    {
+        id: 2,
+        img: "images/categories/p2.jpg",
+        title: "SUMMER SALE",
+    },
+    {
+        id: 3,
+        img: "images/categories/p3.jpg",
+        title: "SUMMER SALE",
+    },
+    {
+        id: 4,
+        img: "images/categories/p4.jpg",
+        title: "SUMMER SALE",
+    },
+    {
+        id: 5,
+        img: "images/categories/p5.jpg",
+        title: "SUMMER SALE",
+    },
+    {
+        id: 6,
+        img: "images/categories/p6.jpg",
+        title: "SUMMER SALE",
+    },
+    {
+        id: 7,
+        img: "images/categories/p7.jpg",
+        title: "SUMMER SALE",
+    },
+    {
+        id: 8,
+        img: "images/categories/p8.jpg",
+        title: "SUMMER SALE",
+    }
+]

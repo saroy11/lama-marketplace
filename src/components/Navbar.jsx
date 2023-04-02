@@ -15,6 +15,7 @@ padding : 1px 10px;
 display : flex;
 justify-content : space-between;
 align-items : center;
+background-color : seashell;
 `
 
 const Left = styled.div`

@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import ArrowLeftOutlinedIcon from '@mui/icons-material/ArrowLeftOutlined';
 import ArrowRightOutlinedIcon from '@mui/icons-material/ArrowRightOutlined';
 import { sliderItems } from "../data"
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const Container = styled.div`
     width : 100%;
@@ -46,14 +46,36 @@ const Slide = styled.div`
     transform : translateX(-${props => props.slideIndex * 100}%);
     background-color : ${props => props.bgColour};
 `
+
+const DotContainer = styled.div`
+    width : 100%;
+    height : 100%;
+    display: flex;
+    justify-content : center;
+    align-items : center;
+    position : absolute;
+    top: 32%;
+    bottom: 0;
+`
+const SlideDot = styled.div`
+    width : 15px;
+    height : 15px;
+    background-color : gray;
+    border-radius : 50%;
+    opacity : 0.5;
+    cursor : pointer;
+    margin : 0 0 20px 20px;
+`
+
 const ImageContainer = styled.div` 
     height : 100%;
     flex : 1;
 `
 
 const Image = styled.img`
-    height : 80%;
+    height : 90%;
     border-radius : 20%;
+    object-fit: cover;
 `
 
 const InfoContainer = styled.div`
@@ -92,6 +114,18 @@ const Slider = () => {
         }
     };
 
+    const handleClickDot = (index) => {
+        setslideIndex(index);
+    };
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            if (slideIndex === 0 || slideIndex < sliderData - 1 ? setslideIndex(slideIndex + 1) : setslideIndex(0));
+        }, 5000);
+
+        return () => clearInterval(intervalId);
+    }, [slideIndex]);
+
     return (
         <Container>
             <Arrow direction="left" onClick={() => handleClick("left")}>
@@ -110,11 +144,17 @@ const Slider = () => {
                         </InfoContainer>
                     </Slide>
                 ))}
-
             </Wrapper>
             <Arrow direction="right" onClick={() => handleClick("right")}>
                 <ArrowRightOutlinedIcon></ArrowRightOutlinedIcon>
             </Arrow>
+            <DotContainer>
+                {sliderItems.map((_, idx) => (
+                    <SlideDot key={idx} slideDotIdx={idx} onClick={() => handleClickDot(idx)} />
+                ))
+                }
+            </DotContainer>
+
         </Container>
     )
 }

@@ -93,7 +93,7 @@ const Products = () => {
         evt.target.style.transform = 'scale(1)';
     }
 
-    const baseURL = process.env.NODE_ENV==='production' ? '/api' : 'http://localhost:3001/api';
+    const baseURL = process.env.NODE_ENV==='production' ? ':3001/api' : 'http://localhost:3001/api';
 
     const fetchData = async () => {
         return await fetch(baseURL+"/product")

@@ -4,6 +4,7 @@ import ArrowLeftOutlinedIcon from '@mui/icons-material/ArrowLeftOutlined';
 import ArrowRightOutlinedIcon from '@mui/icons-material/ArrowRightOutlined';
 import { sliderItems } from "../data"
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Container = styled.div`
     width : 100%;
@@ -48,14 +49,12 @@ const Slide = styled.div`
 `
 
 const DotContainer = styled.div`
-    width : 100%;
-    height : 100%;
     display: flex;
     justify-content : center;
     align-items : center;
     position : absolute;
-    top: 32%;
-    bottom: 0;
+    top: 80%;
+    left: 47%;
 `
 const SlideDot = styled.div`
     width : 15px;
@@ -73,7 +72,7 @@ const ImageContainer = styled.div`
 `
 
 const Image = styled.img`
-    height : 90%;
+    height : 80%;
     border-radius : 20%;
     object-fit: cover;
 `
@@ -81,6 +80,7 @@ const Image = styled.img`
 const InfoContainer = styled.div`
     flex : 1;
     padding : 50px;
+    cursor : pointer;
 `
 
 const Title = styled.h1`
@@ -92,10 +92,13 @@ const Desc = styled.p`
     font-weight : 500;
     letter-spacing : 3px;
 `
+
 const Button = styled.button`
     padding : 10px;
     font-size : 20px;
-    background-color : lightgray;
+    font-weight : 800;
+    border : 1;
+    border-radius : 5%;
     cursor : pointer;
 `
 
@@ -126,6 +129,8 @@ const Slider = () => {
         return () => clearInterval(intervalId);
     }, [slideIndex]);
 
+    const navigate = useNavigate();
+
     return (
         <Container>
             <Arrow direction="left" onClick={() => handleClick("left")}>
@@ -133,18 +138,20 @@ const Slider = () => {
             </Arrow>
             <Wrapper >
                 {sliderItems.map((items) => (
-                    <Slide bgColour={items.bg} slideIndex={slideIndex} key={items.id}>
+                    <Slide bgColour={items.bg} slideIndex={slideIndex}>
+                        
                         <ImageContainer>
-                            <Image src={process.env.PUBLIC_URL + items.img}></Image>
+                            <Image src={process.env.PUBLIC_URL + items.img} key={items.id}></Image>
                         </ImageContainer>
                         <InfoContainer>
-                            <Title>{items.title}</Title>
+                            <Title >{items.title}</Title>
                             <Desc>{items.desc}</Desc>
-                            <Button>SHOP NOW</Button>
+                            <Button onClick={() => navigate('/products',{ state:{message:"from slider"} })}>SHOP NOW</Button>
                         </InfoContainer>
                     </Slide>
                 ))}
             </Wrapper>
+
             <Arrow direction="right" onClick={() => handleClick("right")}>
                 <ArrowRightOutlinedIcon></ArrowRightOutlinedIcon>
             </Arrow>
@@ -154,7 +161,6 @@ const Slider = () => {
                 ))
                 }
             </DotContainer>
-
         </Container>
     )
 }

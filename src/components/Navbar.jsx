@@ -3,6 +3,7 @@ import { Badge } from '@mui/material'
 import React from 'react'
 import styled from 'styled-components'
 import axios from 'axios'
+import { Link, useNavigate } from 'react-router-dom'
 
 const Container = styled.div`
     height : 60px;
@@ -58,7 +59,15 @@ width : 150px;
 const MenuItem = styled.div`
 border : none;
 margin : 25px;
+cursor : pointer;
 `
+
+const linkStyle = {
+    margin: "1rem",
+    textDecoration: "none",
+    color: 'inherit'
+  };
+
 const Navbar = () => {
 
     const clickHandler = async () => {
@@ -121,6 +130,7 @@ const Navbar = () => {
         }
     }
 
+    const navigate = useNavigate();
 
     return (
         <Container>
@@ -132,10 +142,10 @@ const Navbar = () => {
                         <Search style={{ color: "gray", fontSize: "16px" }} />
                     </SearchContainer>
                 </Left>
-                <Center><h1>LAMA.</h1></Center>
+                <Center><h1><Link to="/" style={linkStyle}>LAMA.</Link></h1></Center>
                 <Right>
-                    <MenuItem>Register</MenuItem>
-                    <MenuItem>Sign In</MenuItem>
+                    <MenuItem onClick={()=> navigate("/register")}>Register</MenuItem>
+                    <MenuItem onClick={()=> navigate("/login")}>Sign In</MenuItem>
                     <MenuItem>
                         <Badge badgeContent={4} color="primary">
                             <ShoppingCartCheckoutOutlined onClick={clickHandler} />

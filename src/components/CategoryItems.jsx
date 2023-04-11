@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 
 const Container = styled.div`
@@ -42,7 +43,9 @@ const CategoryItems = ({ item }) => {
       <Image src={process.env.PUBLIC_URL + item.img}></Image>
       <Info>
         <Title>{item.title}</Title>
+        <Link to="/productList">
         <Button>SHOP NOW</Button>
+        </Link>
       </Info>
     </Container>
   )

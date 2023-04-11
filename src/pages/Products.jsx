@@ -9,7 +9,7 @@ import { mobile } from "../responsive";
 import { useLocation } from 'react-router-dom';
 import AxiosConfig from "../components/AxiosConfig"
 
-const Container = styled.div``;
+const Container = styled.div` `;
 
 const Image = styled.img`
     width : 30vh;

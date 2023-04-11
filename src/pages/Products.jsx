@@ -7,6 +7,7 @@ import Newsletter from '../components/Newsletter';
 import Footer from '../components/Footer';
 import { mobile } from "../responsive";
 import { useLocation } from 'react-router-dom';
+import AxiosConfig from "../components/AxiosConfig"
 
 const Container = styled.div``;
 
@@ -93,19 +94,17 @@ const Products = () => {
         evt.target.style.transform = 'scale(1)';
     }
 
-    const baseURL = process.env.NODE_ENV==='production' ? ':3001/api' : 'http://localhost:3001/api';
-
-    const fetchData = async () => {
-        return await fetch(baseURL+"/product")
-            .then((response) => response.json())
-            .then((data) => {
-                setProducts(data);
-                setFilteredProducts(data);
-            });
-    }
+    const fetchData = async () => { 
+            try {
+                const resp = await AxiosConfig.get("/product");
+                setProducts(resp.data);
+                setFilteredProducts(resp.data);
+            } catch (err) {
+                console.log(err);
+            }
+        }
 
     useEffect(() => {
-        console.log("base url "+baseURL);
         fetchData();
     }, [])
 

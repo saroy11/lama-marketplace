@@ -2,8 +2,8 @@ import { Search, ShoppingCartCheckoutOutlined } from '@mui/icons-material'
 import { Badge } from '@mui/material'
 import React from 'react'
 import styled from 'styled-components'
-import axios from 'axios'
 import { Link, useNavigate } from 'react-router-dom'
+import AxiosConfig from "../components/AxiosConfig"
 
 const Container = styled.div`
     height : 60px;
@@ -72,10 +72,9 @@ const Navbar = () => {
 
     const clickHandler = async () => {
         try {
-            const resp = await axios.post("http://localhost:3001/api/payment/createOrder", {
+            const resp = await AxiosConfig.post("/payment/createOrder", {
                 "amount": 200000
             });
-            console.log(resp.data.id);
             makePayment(resp.data.id);
         } catch (err) {
             console.log(err);
@@ -119,7 +118,7 @@ const Navbar = () => {
         console.log(response.razorpay_order_id);
         console.log(response.razorpay_signature)
         try {
-            const resp = await axios.post("http://localhost:3001/api/payment/verifyPayment", {
+            const resp = await AxiosConfig.post("http://localhost:3001/api/payment/verifyPayment", {
                 "razorpay_payment_id": response.razorpay_payment_id,
                 "razorpay_order_id": response.razorpay_order_id,
                 "razorpay_signature": response.razorpay_signature

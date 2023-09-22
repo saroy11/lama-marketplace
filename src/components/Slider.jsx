@@ -121,6 +121,11 @@ const Slider = () => {
         setslideIndex(index);
     };
 
+    const handleClickButton = (e) => {
+        e.target.style.transform = "translateY(2px)";
+        navigate('/products');
+    };
+
     useEffect(() => {
         const intervalId = setInterval(() => {
             if (slideIndex === 0 || slideIndex < sliderData - 1 ? setslideIndex(slideIndex + 1) : setslideIndex(0));
@@ -146,7 +151,7 @@ const Slider = () => {
                         <InfoContainer>
                             <Title >{items.title}</Title>
                             <Desc>{items.desc}</Desc>
-                            <Button onClick={() => navigate('/products',{ state:{message:"from slider"} })}>SHOP NOW</Button>
+                            <Button onClick={handleClickButton}>SHOP NOW</Button>
                         </InfoContainer>
                     </Slide>
                 ))}

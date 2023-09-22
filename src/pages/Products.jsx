@@ -6,8 +6,11 @@ import { useEffect, useState } from "react";
 import Newsletter from '../components/Newsletter';
 import Footer from '../components/Footer';
 import { mobile } from "../responsive";
-import { useLocation } from 'react-router-dom';
 import AxiosConfig from "../components/AxiosConfig"
+import { useDispatch } from 'react-redux';
+import { incremented } from '../redux/counterSlice';
+import { addProduct } from '../redux/productSlice';
+
 
 const Container = styled.div` `;
 
@@ -54,6 +57,33 @@ const Desc = styled.div`
     margin-bottom : 10px;
 `;
 
+const Btn = styled.button`
+ align-items : center;
+ justify-content : center;
+ width : 90px;
+ height : 30px;
+ background-color: hsla(40, 72%, 50%, 1);
+ border: 1px solid hsla(40, 72%, 60%, 1);
+ white-space: nowrap;
+ color: hsla(150, 14%, 97%, 1);
+ cursor: pointer;
+ outline: none;
+ text-shadow: 0.1rem 0.1rem 0.5rem hsla(0, 0%, 0%, 0.5);
+ border-radius: 0.5rem;
+ user-select: none;
+ margin: 1rem;
+ transition: all 0.1s ease-in;
+
+ &:hover {
+  background-color: hsla(40, 72%, 60%, 1);
+  transform: translateY(-3px);
+ }
+
+ &:active {
+  background-color: hsla(40, 72%, 35%, 1);
+ }
+`
+
 const FilterContainer = styled.div`
   display: flex;
   justify-content: space-between;
@@ -80,11 +110,9 @@ const Option = styled.option``;
 
 const Products = () => {
 
-    const location = useLocation();
-    console.log(location);
-
     const [products, setProducts] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
+    const [cartProducts, setCartProducts] = useState([]);
 
     const mouseHandlerIn = (evt) => {
         evt.target.style.transform = 'scale(1.5)';
@@ -94,15 +122,16 @@ const Products = () => {
         evt.target.style.transform = 'scale(1)';
     }
 
-    const fetchData = async () => { 
-            try {
-                const resp = await AxiosConfig.get("/product");
-                setProducts(resp.data);
-                setFilteredProducts(resp.data);
-            } catch (err) {
-                console.log(err);
-            }
+    const fetchData = async () => {
+        try {
+            const resp = await AxiosConfig.get("/product");
+            setProducts(resp.data);
+            setFilteredProducts(resp.data);
+            console.log(resp.data)
+        } catch (err) {
+            console.log(err);
         }
+    }
 
     useEffect(() => {
         fetchData();
@@ -115,13 +144,25 @@ const Products = () => {
     }
 
     useEffect(() => {
-        if(category==='all' ? setFilteredProducts(products) :
-        setFilteredProducts(products.filter((items) => {return items.category===category})));
+        if (category === 'all' ? setFilteredProducts(products) :
+            setFilteredProducts(products.filter((items) => { return items.category === category })));
     }, [category])
+
+    const [count, setCount] = useState(0);
+    const dispatch = useDispatch();
+
+    const addItemsToCart = (val) => {
+        //setCount(count + 1);
+        dispatch(incremented());
+        //cartProducts.push(products.filter((items) => { return items.id === val }));
+        //setCartProducts(cartProducts);
+        const item = products.filter((items) => { return items.id === val });
+        dispatch(addProduct(item));     
+    }
 
     return (
         <Container>
-            <Navbar />
+            <Navbar count={count} cartProducts={cartProducts} />
             <Announcement />
             <FilterContainer>
                 <Filter>
@@ -152,6 +193,7 @@ const Products = () => {
                         <Title><h1>{items.title}</h1></Title>
                         <Price><h2>Price:</h2>&nbsp;{items.price}</Price>
                         <Desc>{items.description}</Desc>
+                        <Btn onClick={() => addItemsToCart(items.id)}>ADD TO CART</Btn>
                     </ImageDesc>
                 </ImageContainer>
             ))}

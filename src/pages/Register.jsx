@@ -1,6 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 import { mobile } from "../responsive";
+import AxiosConfig from "../components/AxiosConfig"
+import { useState } from "react";
+import { useNavigate } from 'react-router-dom'
 
 const Container = styled.div`
   width: 100vw;
@@ -29,7 +32,7 @@ const Title = styled.h1`
   font-weight: 300;
 `;
 
-const Form = styled.form`
+const Form = styled.div`
   display: flex;
   flex-wrap: wrap;
 `;
@@ -56,6 +59,27 @@ const Button = styled.button`
 `;
 
 const Register = () => {
+
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const clickHandler = () => {
+    AxiosConfig.post('/user/registerUser', {
+      "username": username,
+      "email": email,
+      "password": password
+    })
+      .then(response => {
+        alert(response.data.username+ 'Your Registration is successful, id '+response.data._id);
+        navigate("/login");
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  }
+
   return (
     <Container>
       <Wrapper>
@@ -63,15 +87,15 @@ const Register = () => {
         <Form>
           <Input placeholder="name" />
           <Input placeholder="last name" />
-          <Input placeholder="username" />
-          <Input placeholder="email" />
+          <Input placeholder="username" onChange={(e) => setUsername(e.target.value)} />
+          <Input placeholder="email" onChange={(e) => setEmail(e.target.value)} />
           <Input placeholder="password" />
-          <Input placeholder="confirm password" />
+          <Input placeholder="confirm password" onChange={(e) => setPassword(e.target.value)} />
           <Agreement>
             By creating an account, I consent to the processing of my personal
             data in accordance with the <b>PRIVACY POLICY</b>
           </Agreement>
-          <Button>CREATE</Button>
+          <Button onClick={clickHandler}>CREATE</Button>
         </Form>
       </Wrapper>
     </Container>

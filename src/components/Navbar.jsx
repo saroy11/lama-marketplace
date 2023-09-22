@@ -3,7 +3,7 @@ import { Badge } from '@mui/material'
 import React from 'react'
 import styled from 'styled-components'
 import { Link, useNavigate } from 'react-router-dom'
-import AxiosConfig from "../components/AxiosConfig"
+import { useSelector } from "react-redux"
 
 const Container = styled.div`
     height : 60px;
@@ -66,70 +66,19 @@ const linkStyle = {
     margin: "1rem",
     textDecoration: "none",
     color: 'inherit'
-  };
+};
 
-const Navbar = () => {
-
-    const clickHandler = async () => {
-        try {
-            const resp = await AxiosConfig.post("/payment/createOrder", {
-                "amount": 200000
-            });
-            makePayment(resp.data.id);
-        } catch (err) {
-            console.log(err);
-        }
-    }
-
-    const makePayment = (id) => {
-
-        console.log("inside makePayment " + id);
-
-        const options = {
-            "key_id": "rzp_test_XvVEwZAwS7PnEi", // Enter the Key ID generated from the Dashboard
-            "amount": "200000", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
-            "currency": "INR",
-            "name": "Acme Corp", //your business name
-            "description": "Test Transaction",
-            "image": "https://example.com/your_logo",
-            "order_id": id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-            //"callback_url": "http://localhost:3001/api/payment/verifyPayment",
-            "handler": function (response) {
-                verifymayment(response);
-            },
-            "prefill": {
-                "name": "Sandeep Roy", //your customer's name
-                "email": "sandeep.roy@hotmail.com",
-                "contact": "9650777919"
-            },
-            "notes": {
-                "address": "Razorpay Corporate Office"
-            },
-            "theme": {
-                "color": "#3399cc"
-            }
-        };
-        const rzp1 = new window.Razorpay(options);
-        rzp1.open();
-    }
-
-    const verifymayment = async (response) => {
-        console.log(response.razorpay_payment_id);
-        console.log(response.razorpay_order_id);
-        console.log(response.razorpay_signature)
-        try {
-            const resp = await AxiosConfig.post("http://localhost:3001/api/payment/verifyPayment", {
-                "razorpay_payment_id": response.razorpay_payment_id,
-                "razorpay_order_id": response.razorpay_order_id,
-                "razorpay_signature": response.razorpay_signature
-            });
-            console.log(resp);
-        } catch (err) {
-            console.log(err);
-        }
-    }
+const Navbar = (props) => {
 
     const navigate = useNavigate();
+
+    const clickHandler = (cartProducts) => {
+        navigate("/cart", {
+            state: { cartProducts }
+        });
+    }
+
+    const cartItems = useSelector(state => state.counter.value);
 
     return (
         <Container>
@@ -143,11 +92,11 @@ const Navbar = () => {
                 </Left>
                 <Center><h1><Link to="/" style={linkStyle}>LAMA.</Link></h1></Center>
                 <Right>
-                    <MenuItem onClick={()=> navigate("/register")}>Register</MenuItem>
-                    <MenuItem onClick={()=> navigate("/login")}>Sign In</MenuItem>
+                    <MenuItem onClick={() => navigate("/register")}>Register</MenuItem>
+                    <MenuItem onClick={() => navigate("/login")}>Sign In</MenuItem>
                     <MenuItem>
-                        <Badge badgeContent={4} color="primary">
-                            <ShoppingCartCheckoutOutlined onClick={clickHandler} />
+                        <Badge badgeContent={cartItems} color="primary">
+                            <ShoppingCartCheckoutOutlined onClick={() => clickHandler(props.cartProducts)} />
                         </Badge>
                     </MenuItem>
                 </Right>

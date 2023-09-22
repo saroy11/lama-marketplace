@@ -1,10 +1,15 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Add, Remove } from "@mui/icons-material";
 import styled from "styled-components";
 import Announcement from "../components/Announcement";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { mobile } from "../responsive";
+import { useLocation } from "react-router-dom";
+import AxiosConfig from "../components/AxiosConfig"
+import { useNavigate } from 'react-router-dom'
+import { useSelector, useDispatch } from "react-redux";
+import { decremented, incremented } from "../redux/counterSlice";
 
 const Container = styled.div``;
 
@@ -58,6 +63,7 @@ const Info = styled.div`
 const Product = styled.div`
   display: flex;
   justify-content: space-between;
+  padding : 22px;
   ${mobile({ flexDirection: "column" })}
 `;
 
@@ -67,7 +73,7 @@ const ProductDetail = styled.div`
 `;
 
 const Image = styled.img`
-  width: 200px;
+  width: 100px;
 `;
 
 const Details = styled.div`
@@ -80,15 +86,6 @@ const Details = styled.div`
 const ProductName = styled.span``;
 
 const ProductId = styled.span``;
-
-const ProductColor = styled.div`
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background-color: ${(props) => props.color};
-`;
-
-const ProductSize = styled.span``;
 
 const PriceDetail = styled.div`
   flex: 1;
@@ -155,6 +152,92 @@ const Button = styled.button`
 `;
 
 const Cart = () => {
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [cartLen, setCartLen] = useState([]);
+  const [cartProducts, setcartProducts] = useState([]);
+  const cartItems = useSelector(state=>state.counter.value);
+  const productItems = useSelector(state=>state.product.product);
+
+  useEffect(() => {
+    /*const { cartProducts } = location.state;
+    const len = cartProducts.length;
+    const len = productItems.length;
+    len > 0 ? setCartLen(len) : setCartLen(0);
+    setcartProducts(location.state.cartProducts.flat(Infinity))*/
+    setcartProducts(productItems.flat(Infinity));
+  }, []);
+
+  const clickHandler = async () => {
+    try {
+      const resp = await AxiosConfig.post("/payment/createOrder", {
+        "amount": 200000
+      });
+      makePayment(resp.data.id);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  const makePayment = (id) => {
+
+    console.log("inside makePayment " + id);
+
+    const options = {
+      "key_id": "rzp_test_XvVEwZAwS7PnEi", // Enter the Key ID generated from the Dashboard
+      "amount": "200000", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+      "currency": "INR",
+      "name": "Acme Corp", //your business name
+      "description": "Test Transaction",
+      "image": "https://example.com/your_logo",
+      "order_id": id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+      //"callback_url": "http://localhost:3001/api/payment/verifyPayment",
+      "handler": function (response) {
+        verifymayment(response);
+      },
+      "prefill": {
+        "name": "Sandeep Roy", //your customer's name
+        "email": "sandeep.roy@hotmail.com",
+        "contact": "9650777919"
+      },
+      "notes": {
+        "address": "Razorpay Corporate Office"
+      },
+      "theme": {
+        "color": "#3399cc"
+      }
+    };
+    const rzp1 = new window.Razorpay(options);
+    rzp1.open();
+  }
+
+  const verifymayment = async (response) => {
+    console.log(response.razorpay_payment_id);
+    console.log(response.razorpay_order_id);
+    console.log(response.razorpay_signature)
+    try {
+      const resp = await AxiosConfig.post("/payment/verifyPayment", {
+        "razorpay_payment_id": response.razorpay_payment_id,
+        "razorpay_order_id": response.razorpay_order_id,
+        "razorpay_signature": response.razorpay_signature
+      });
+      console.log(resp);
+      navigate("/");
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  const dispatch = useDispatch();
+
+  const addItem = ()=> {
+    dispatch(incremented());
+  }
+
+  const removeItem = ()=> {
+    dispatch(decremented());
+  }
+
   return (
     <Container>
       <Navbar />
@@ -162,66 +245,40 @@ const Cart = () => {
       <Wrapper>
         <Title>YOUR BAG</Title>
         <Top>
-          <TopButton>CONTINUE SHOPPING</TopButton>
+          <TopButton onClick={()=>navigate("/products")}>CONTINUE SHOPPING</TopButton>
           <TopTexts>
-            <TopText>Shopping Bag(2)</TopText>
-            <TopText>Your Wishlist (0)</TopText>
+            <TopText>Shopping Bag ({cartItems})</TopText>
           </TopTexts>
           <TopButton type="filled">CHECKOUT NOW</TopButton>
         </Top>
         <Bottom>
           <Info>
-            <Product>
-              <ProductDetail>
-                <Image src="https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1614188818-TD1MTHU_SHOE_ANGLE_GLOBAL_MENS_TREE_DASHERS_THUNDER_b01b1013-cd8d-48e7-bed9-52db26515dc4.png?crop=1xw:1.00xh;center,top&resize=480%3A%2A" />
-                <Details>
-                  <ProductName>
-                    <b>Product:</b> JESSIE THUNDER SHOES
-                  </ProductName>
-                  <ProductId>
-                    <b>ID:</b> 93813718293
-                  </ProductId>
-                  <ProductColor color="black" />
-                  <ProductSize>
-                    <b>Size:</b> 37.5
-                  </ProductSize>
-                </Details>
-              </ProductDetail>
-              <PriceDetail>
-                <ProductAmountContainer>
-                  <Add />
-                  <ProductAmount>2</ProductAmount>
-                  <Remove />
-                </ProductAmountContainer>
-                <ProductPrice>$ 30</ProductPrice>
-              </PriceDetail>
-            </Product>
+            {
+              cartProducts.map((items) => (
+                <Product>
+                  <ProductDetail>
+                    <Image src={items.image} />
+                    <Details>
+                      <ProductName>
+                        <b>Product:</b> {items.title}
+                      </ProductName>
+                      <ProductId>
+                        <b>ID:</b> {items._id}
+                      </ProductId>
+                    </Details>
+                  </ProductDetail>
+                  <PriceDetail>
+                    <ProductAmountContainer>
+                      <Add onClick={addItem}/>
+                      <ProductAmount>2</ProductAmount>
+                      <Remove onClick={removeItem}/>
+                    </ProductAmountContainer>
+                    <ProductPrice>{items.price}</ProductPrice>
+                  </PriceDetail>
+                </Product>
+              ))
+            }
             <Hr />
-            <Product>
-              <ProductDetail>
-                <Image src="https://i.pinimg.com/originals/2d/af/f8/2daff8e0823e51dd752704a47d5b795c.png" />
-                <Details>
-                  <ProductName>
-                    <b>Product:</b> HAKURA T-SHIRT
-                  </ProductName>
-                  <ProductId>
-                    <b>ID:</b> 93813718293
-                  </ProductId>
-                  <ProductColor color="gray" />
-                  <ProductSize>
-                    <b>Size:</b> M
-                  </ProductSize>
-                </Details>
-              </ProductDetail>
-              <PriceDetail>
-                <ProductAmountContainer>
-                  <Add />
-                  <ProductAmount>1</ProductAmount>
-                  <Remove />
-                </ProductAmountContainer>
-                <ProductPrice>$ 20</ProductPrice>
-              </PriceDetail>
-            </Product>
           </Info>
           <Summary>
             <SummaryTitle>ORDER SUMMARY</SummaryTitle>
@@ -241,7 +298,7 @@ const Cart = () => {
               <SummaryItemText>Total</SummaryItemText>
               <SummaryItemPrice>$ 80</SummaryItemPrice>
             </SummaryItem>
-            <Button>CHECKOUT NOW</Button>
+            <Button onClick={clickHandler}>CHECKOUT NOW</Button>
           </Summary>
         </Bottom>
       </Wrapper>

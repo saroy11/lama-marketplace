@@ -2,6 +2,9 @@ import React from "react";
 import styled from "styled-components";
 import {mobile} from "../responsive";
 import { Link } from "react-router-dom";
+import AxiosConfig from "../components/AxiosConfig"
+import { useState } from "react";
+import { useNavigate } from 'react-router-dom'
 
 const Container = styled.div`
   width: 100vw;
@@ -30,7 +33,7 @@ const Title = styled.h1`
   font-weight: 300;
 `;
 
-const Form = styled.form`
+const Form = styled.div`
   display: flex;
   flex-direction: column;
 `;
@@ -58,14 +61,30 @@ const LinkStyle = {
 };
 
 const Login = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const clickHandler = (event) => {
+    AxiosConfig.post('/auth/login', {
+      "username": username,
+      "password": password
+    })
+      .then(response => {
+        response.data._id!=null ? navigate("/") : alert('Invalid Login');
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  }
+
   return (
     <Container>
       <Wrapper>
         <Title>SIGN IN</Title>
         <Form>
-          <Input placeholder="username" />
-          <Input placeholder="password" />
-          <Button>LOGIN</Button>
+          <Input placeholder="username" onChange={(e) => setUsername(e.target.value)} />
+          <Input placeholder="password" onChange={(e) => setPassword(e.target.value)} />
+          <Button onClick={clickHandler}>LOGIN</Button>
           <Link style={LinkStyle}>DO NOT YOU REMEMBER THE PASSWORD?</Link>
           <Link style={LinkStyle} to="/register">CREATE A NEW ACCOUNT</Link>
         </Form>
